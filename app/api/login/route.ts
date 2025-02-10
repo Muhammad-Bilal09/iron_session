@@ -27,7 +27,6 @@ export const POST = async (request: NextRequest) => {
       return new NextResponse("Invalid email or password", { status: 401 });
     }
 
-    // Create session
     const response = new NextResponse("Login successful", { status: 200 });
     const session = await getIronSession<IronSessionData>(
       request,

@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getIronSession } from "iron-session";
 import { prisma } from "@/lib/prisma";
-export async function POST(req: NextRequest) {
+import { sessionOptions } from "@/lib/session";
+import { UserSession } from "@/types/Types";
+
+export async function POST(request: NextRequest) {
   try {
-    const { title, description } = await req.json();
+    const response = new NextResponse();
+    const session = await getIronSession<{ user?: UserSession }>(
+      request,
+      response,
+      sessionOptions
+    );
+
+    if (!session.user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
+    }
+
+    const { title, description } = await request.json();
 
     if (!title || !description) {
       return NextResponse.json(
